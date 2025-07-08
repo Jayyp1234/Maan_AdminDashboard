@@ -1,0 +1,44 @@
+[
+  {
+    "code": "GHS",
+    "name": "Ghanaian Cedi",
+    "countries": [
+      "GH"
+    ]
+  },
+  {
+    "code": "KES",
+    "name": "Kenyan Shilling",
+    "countries": [
+      "KE"
+    ]
+  },
+  {
+    "code": "NGN",
+    "name": "Nigerian Naira",
+    "countries": [
+      "NG"
+    ]
+  },
+  {
+    "code": "BDT",
+    "name": "Bangladeshi Taka",
+    "countries": [
+      "BD"
+    ]
+  },
+  {
+    "code": "INR",
+    "name": "Indian Rupee",
+    "countries": [
+      "IN"
+    ]
+  },
+  {
+    "code": "NPR",
+    "name": "Nepalese Rupee",
+    "countries": [
+      "NP"
+    ]
+  }
+]
