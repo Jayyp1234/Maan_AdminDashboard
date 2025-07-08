@@ -15,9 +15,7 @@ class AuthAPI {
 	}
 
 	async sendResetOtp(email) {
-		return await apiClient.post(API_ENDPOINTS.SEND_FORGOT_PASSWORD_OTP, {
-			email,
-		});
+		return await apiClient.post(API_ENDPOINTS.SEND_FORGOT_PASSWORD_OTP, { email });
 	}
 
 	async verifyResetOtp(email, otp) {
@@ -35,26 +33,6 @@ class AuthAPI {
 
 	async verifyToken(token) {
 		return await apiClient.get("/auth/verify", {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-	}
-
-	async refreshToken() {
-		const token = localStorage.getItem("token");
-		const refreshed = await apiClient.post("/auth/refresh", null, {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		localStorage.setItem("token", refreshed.token);
-		return refreshed;
-	}
-
-	async getUserDetails() {
-		const token = localStorage.getItem("token");
-		return await apiClient.get("auth/api/admin/profile", {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},

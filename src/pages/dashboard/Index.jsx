@@ -11,63 +11,56 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "../../components/ui/skeleton";
 import { TotalUsersIcon, UserBlockedIcon, UserPendingIcon, UserVerifiedIcon } from "../../resources/icons";
+import { getAllStaffsAdminDashboard, getAllVendorsAdminDashboard } from "../../store/slices/adminSlice";
 
 export default function Index() {
 	const dispatch = useDispatch();
-	// const { analytics, loading: analyticsLoading, analyticsDetailed } = useSelector((state) => state.senders);
-	// const {
-	// 	allTransactions,
-	// 	stats: transactionStats,
-	// 	loading: transactionLoading,
-	// 	analytics: transactionAnalytics,
-	// } = useSelector((state) => state.transactions);
+	const { list, stats, loading } = useSelector((state) => state.admin.vendors);
+	const { loading: staffAdminLoading, list: staffs } = useSelector((state) => state.admin.staff);
 
-	// useEffect(() => {
-	// 	dispatch(fetchSendersAnalytics());
-	// 	dispatch(fetchAllTransactions());
-	// 	dispatch(fetchTransactionsAnalytics());
-	// 	dispatch(fetchProfileAnalyticsDetailed());
-	// }, []);
+	useEffect(() => {
+		dispatch(getAllVendorsAdminDashboard());
+		dispatch(getAllStaffsAdminDashboard());
+	}, []);
 
-	// const slicedTransactions = allTransactions?.slice(0, 9) || [];
+	const slicedVendors = list?.slice(0, 9) || [];
 
 	return (
 		<div>
 			<PageTitle title={"Dashboard"} />
 			<section>
 				<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mt-5">
+					<Card cardTitle="Total Vendors" icon={<TotalUsersIcon />} isLoading={loading} status="all" value={formatNumber(stats?.total_vendor)} />
 					<Card
-						cardTitle="Total Vendors"
-						icon={<TotalUsersIcon />}
-						// isLoading={analyticsLoading}
-						increment={true}
-						status="all"
-						value={formatNumber(34534)}
-					/>
-					<Card
-						cardTitle="Verified Vendors"
-						// isLoading={analyticsLoading}
+						cardTitle="Total Amount Vendors Paid"
+						isLoading={loading}
 						status="verified"
 						icon={<UserVerifiedIcon />}
-						increment={true}
-						value={formatNumber(34534)}
+						value={formatNumber(stats?.total_vendor_amount)}
 					/>
 					<Card
-						cardTitle="Unverified Vendors"
-						icon={<UserPendingIcon />}
-						status="pending"
-						// isLoading={analyticsLoading}
-						increment={true}
-						value={formatNumber(34534)}
+						cardTitle="Total Confirmed Vendor Payment"
+						isLoading={loading}
+						status="verified"
+						icon={<UserVerifiedIcon />}
+						value={formatNumber(stats?.total_vendor_confirm_payment)}
 					/>
 					<Card
-						cardTitle="Blocked Vendors"
-						icon={<UserBlockedIcon />}
-						status="blocked"
-						// isLoading={analyticsLoading}
-						increment={true}
-						value={formatNumber(2)}
+						cardTitle="Total Confirmed Vendor Payment Amount"
+						isLoading={loading}
+						status="verified"
+						icon={<UserVerifiedIcon />}
+						value={formatNumber(stats?.total_vendor_confirm_payment_amount)}
 					/>
+					<Card
+						cardTitle="Total Vendor Incomplete Payment"
+						isLoading={loading}
+						status="verified"
+						icon={<UserVerifiedIcon />}
+						value={formatNumber(stats?.total_vendor_incomplete_payment)}
+					/>
+					<Card cardTitle="Unverified Vendors" icon={<UserPendingIcon />} status="pending" isLoading={loading} value={formatNumber(34534)} />
+					<Card cardTitle="Blocked Vendors" icon={<UserBlockedIcon />} status="blocked" isLoading={loading} value={formatNumber(2)} />
 				</div>
 			</section>
 			<section>
@@ -91,24 +84,23 @@ export default function Index() {
 									</TableRow>
 								</TableHeader>
 								<TableBody className="min-h-[300px]">
-									{/* {transactionLoading
+									{loading
 										? new Array(7).fill("").map((_, index) => (
 												<TableRow key={index}>
-													<TableCell colSpan={4}>
+													<TableCell colSpan={5}>
 														<Skeleton className="bg-stone-100 w-full h-10" />
 													</TableCell>
 												</TableRow>
 										  ))
-										: */}
-									{allTransactions.map((txn, index) => (
-										<TableRow key={index}>
-											<TableCell className={"px-3"}>{index}</TableCell>
-											<TableCell className={"px-3"}>{txn.sender}</TableCell>
-											<TableCell className={"py-3"}>{txn.rate}</TableCell>
-											<TableCell className={"py-3"}>{txn.status}</TableCell>
-											<TableCell className={"py-3"}>{txn.sent_at}</TableCell>
-										</TableRow>
-									))}
+										: slicedVendors.map((vendor, index) => (
+												<TableRow key={index}>
+													<TableCell className={"px-3"}>{index}</TableCell>
+													<TableCell className={"px-3"}>{vendor.applicant_name}</TableCell>
+													<TableCell className={"py-3"}>{vendor.amount ?? "N/A"}</TableCell>
+													<TableCell className={"py-3"}>{vendor.registration_status ?? "N/A"}</TableCell>
+													<TableCell className={"py-3"}>{vendor.created_at ?? "N/A"}</TableCell>
+												</TableRow>
+										  ))}
 								</TableBody>
 							</Table>
 						</div>
@@ -117,20 +109,20 @@ export default function Index() {
 						<header className="flex items-center justify-between gap-8 px-4 pt-4 pb-4">
 							<h5 className="font-semibold text-xl">Staff Admins</h5>
 							<Link to={AUTHENTICATED_ROUTES.admin} className="text-(--primary-clr) font-semibold text-sm">
-								More
+								See all staffs
 							</Link>
 						</header>
 						<div>
 							<Table>
 								<TableHeader>
 									<TableRow className={"hover:bg-white"}>
-										<TableHead className={`${tableHeaderCellStyle} px-3`}>S/N</TableHead>
+										<TableHead className={`${tableHeaderCellStyle} px-5`}>S/N</TableHead>
 										<TableHead className={`${tableHeaderCellStyle} px-4`}>Admin</TableHead>
 										<TableHead className={`${tableHeaderCellStyle} px-4`}>Role</TableHead>
 									</TableRow>
 								</TableHeader>
 								<TableBody className="min-h-[300px]">
-									{/* {transactionLoading
+									{staffAdminLoading
 										? new Array(7).fill("").map((_, index) => (
 												<TableRow key={index}>
 													<TableCell colSpan={4}>
@@ -138,14 +130,16 @@ export default function Index() {
 													</TableCell>
 												</TableRow>
 										  ))
-										: */}
-									{allTransactions.map((txn, index) => (
-										<TableRow key={index}>
-											<TableCell className={"px-3"}>{index}</TableCell>
-											<TableCell className={"px-3"}>{txn.sender}</TableCell>
-											<TableCell className={"py-3"}>{txn.status}</TableCell>
-										</TableRow>
-									))}
+										: staffs.map((staff, index) => (
+												<TableRow key={index}>
+													<TableCell className={"px-5"}>{index}</TableCell>
+													<TableCell className={"px-4"}>
+														{staff.firstName}
+														{staff.lastName}
+													</TableCell>
+													<TableCell className={"px-4"}>{staff.phone ?? "N/A"}</TableCell>
+												</TableRow>
+										  ))}
 								</TableBody>
 							</Table>
 						</div>

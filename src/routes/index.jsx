@@ -8,6 +8,7 @@ import PageNotFound from "@/pages/error/PageNotFound";
 import ForgotPassword from "@/pages/auth/ForgotPassword";
 import Vendors from "../pages/dashboard/Vendors";
 import AdminStaffs from "../pages/dashboard/AdminStaffs";
+import Payments from "../pages/dashboard/Payments";
 
 export const router = createBrowserRouter([
 	{
@@ -36,6 +37,11 @@ export const router = createBrowserRouter([
 				path: AUTHENTICATED_ROUTES.admin,
 				element: <DashboardLayout />,
 				children: [{ index: true, element: <AdminStaffs /> }],
+			},
+			{
+				path: AUTHENTICATED_ROUTES.payments,
+				element: <DashboardLayout />,
+				children: [{ index: true, element: <Payments /> }],
 			},
 		],
 	},

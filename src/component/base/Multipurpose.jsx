@@ -25,6 +25,7 @@ import {
 	GatewayIcon,
 	UserIcon,
 	UsersIcon,
+	MoneyIcon,
 } from "@/resources/icons";
 import { AUTHENTICATED_ROUTES } from "@/routes/router";
 
@@ -45,6 +46,12 @@ export const sidebarLinks = [
 		icon: UsersIcon,
 		name: "Admin Staffs",
 		path: AUTHENTICATED_ROUTES.admin,
+		isButton: false,
+	},
+	{
+		icon: MoneyIcon,
+		name: "Payments",
+		path: AUTHENTICATED_ROUTES.payments,
 		isButton: false,
 	},
 	// {

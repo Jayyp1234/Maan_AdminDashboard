@@ -4,7 +4,7 @@ import DashboardHeader from "./DashboardHeader";
 import { useDispatch, useSelector } from "react-redux";
 import { LogoutModal } from "../base/Modals";
 import { toggleLogoutModal } from "@/store/slices/appSlice";
-import { pagesForComponentVisibility } from "@/resources/helpers/utils";
+// import { pagesForComponentVisibility } from "@/resources/helpers/utils";
 
 export default function DashboardLayout() {
 	const { sidebarOpen, logoutModalOpen, exportDownloadFileOpen } = useSelector((state) => state.app);
@@ -13,7 +13,7 @@ export default function DashboardLayout() {
 	const location = useLocation();
 	const currentPath = location.pathname;
 
-	const shouldShowExportModal = pagesForComponentVisibility.exportAsModal?.some((eachPath) => currentPath.includes(eachPath));
+	// const shouldShowExportModal = pagesForComponentVisibility.exportAsModal?.some((eachPath) => currentPath.includes(eachPath));
 
 	return (
 		<>

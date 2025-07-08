@@ -10,7 +10,7 @@ const initialState = {
 	loading: false,
 };
 
-const uiSlice = createSlice({
+const appSlice = createSlice({
 	name: "app",
 	initialState,
 	reducers: {
@@ -69,6 +69,6 @@ export const {
 	toggleLogoutModal,
 	logout,
 	toggleExportDownloadModal,
-} = uiSlice.actions;
+} = appSlice.actions;
 
-export default uiSlice.reducer;
+export default appSlice;

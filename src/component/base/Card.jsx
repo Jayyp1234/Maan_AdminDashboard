@@ -10,8 +10,8 @@ const statusMap = {
 
 export const Card = ({ cardTitle = "", value = "", status = "all", icon = null, isLoading }) => {
 	return (
-		<div className="bg-white rounded-lg flex p-6 pt-5 shadow-xs flex-col gap-y-8">
-			<span className="text-slate-600 tracking-tight text-[.9rem] font-medium capitalize">{cardTitle}</span>
+		<div className="bg-white rounded-lg flex justify-between p-6 pt-5 shadow-xs flex-col gap-y-8">
+			<span className="text-slate-600 tracking-tight text-[.9rem] font-medium capitalize text-balance">{cardTitle}</span>
 			{isLoading ? (
 				<Skeleton className={"w-full bg-slate-100 h-10"} />
 			) : (

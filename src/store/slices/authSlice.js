@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { authAPI } from "../api/auth";
+import { apiClient } from "../../utils/apiInterceptor";
+import { API_ENDPOINTS } from "../../constants/apiEndpoints";
 
 export const loginUser = createAsyncThunk("admin/login", async ({ email, password }, { rejectWithValue }) => {
 	try {
 		const response = await authAPI.login(email, password);
-		localStorage.setItem("token", response.data.token);
-		localStorage.setItem("user", JSON.stringify(response.data.admin));
+		localStorage.setItem("token", response.token);
+		localStorage.setItem("adminId", response.data.id);
 		return response.data;
 	} catch (error) {
 		return rejectWithValue(error.message);
@@ -82,14 +84,10 @@ export const verifyToken = createAsyncThunk("auth/verifyToken", async (_, { reje
 	}
 });
 
-export const getUserDetails = createAsyncThunk("auth/getUserDetails", async (_, { rejectWithValue }) => {
+export const getUserAdminProfile = createAsyncThunk("auth/getUserAdminProfile", async (_, { rejectWithValue }) => {
 	try {
-		const token = localStorage.getItem("token");
-		if (!token) {
-			return rejectWithValue("No authentication token found");
-		}
-		const { data } = await authAPI.getUserDetails();
-		localStorage.setItem("user", JSON.stringify(data));
+		const adminId = localStorage.getItem("adminId");
+		const { data } = await apiClient.get(API_ENDPOINTS.USER_ADMIN_PROFILE(adminId));
 		return data;
 	} catch (error) {
 		return rejectWithValue(error.response?.data?.message || "Failed to fetch user details");
@@ -99,7 +97,7 @@ export const getUserDetails = createAsyncThunk("auth/getUserDetails", async (_, 
 const initialState = {
 	user: null,
 	token: localStorage.getItem("token") || null,
-	isAuthenticated: !!localStorage.getItem("token"),
+	isAuthenticated: true,
 	loading: false,
 	error: null,
 	resetPassword: {
@@ -108,6 +106,11 @@ const initialState = {
 		email: null,
 		otp: null,
 		otpVerified: false,
+		error: null,
+	},
+	adminProfile: {
+		data: null,
+		loading: false,
 		error: null,
 	},
 };
@@ -248,19 +251,17 @@ const authSlice = createSlice({
 				state.resetPassword.error = action.payload;
 			})
 			// get user details
-			.addCase(getUserDetails.pending, (state) => {
-				state.loading = true;
-				state.error = null;
+			.addCase(getUserAdminProfile.pending, (state) => {
+				state.adminProfile.loading = true;
+				state.adminProfile.error = null;
 			})
-			.addCase(getUserDetails.fulfilled, (state, action) => {
-				state.loading = false;
-				state.user = action.payload;
-				state.isAuthenticated = true;
-				state.error = null;
+			.addCase(getUserAdminProfile.fulfilled, (state, action) => {
+				state.adminProfile.loading = false;
+				state.adminProfile.data = action.payload;
 			})
-			.addCase(getUserDetails.rejected, (state, action) => {
-				state.loading = false;
-				state.error = action.payload;
+			.addCase(getUserAdminProfile.rejected, (state, action) => {
+				state.adminProfile.loading = false;
+				state.adminProfile.error = action.payload || "Failed to load admin profile";
 			});
 	},
 });

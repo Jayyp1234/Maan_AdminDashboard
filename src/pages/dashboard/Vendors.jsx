@@ -1,8 +1,21 @@
+import { useDispatch, useSelector } from "react-redux";
 import { PageTitle } from "../../component/base/PageTitle";
-// import { StaffsTable } from "../../component/tables/StaffsTable";
+import { VendorsTable } from "../../component/tables/VendorTable";
 import { IconWrapper, SearchIcon } from "../../resources/icons";
+import { getAllVendorsAdminDashboard, setVendorSearch } from "../../store/slices/adminSlice";
+import { useEffect } from "react";
 
 export default function Vendors() {
+	const dispatch = useDispatch();
+	const { search, loading, error } = useSelector((state) => state.admin.vendors);
+
+	useEffect(() => {
+		dispatch(getAllVendorsAdminDashboard());
+	}, [dispatch]);
+
+	const handleSearchChange = (e) => {
+		dispatch(setVendorSearch(e.target.value));
+	};
 	return (
 		<div>
 			<PageTitle title="Vendors" />
@@ -12,12 +25,12 @@ export default function Vendors() {
 					{/* Search Input */}
 					<div className="relative w-full border rounded-full focus-within:border-(--primary-clr) border-stone-200 lg:w-80 transition ease-in-out duration-300">
 						<input
-							placeholder="Search by name, email or phone..."
-							className="pl-12 w-full rounded-full border-(--primary-clr) h-10 placeholder:text-[.9rem] bg-transparent focus:outline-none"
+							className="pl-12 pr-5 w-full rounded-full border-(--primary-clr) h-10 placeholder:text-[.9rem] bg-transparent focus:outline-none"
 							name="Search"
-							// value={filters.search}
+							value={search}
+							onChange={handleSearchChange}
+							placeholder="Search by applicant name, email"
 							type="search"
-							// onChange={handleSearch}
 						/>
 						<IconWrapper className="absolute pointer-events-none p-3 text-stone-600 bg-transparent top-1/2 text-xl -translate-y-1/2 left-1">
 							<SearchIcon />
@@ -25,7 +38,9 @@ export default function Vendors() {
 					</div>
 				</div>
 
-				<div className="mt-8">{/* <StaffsTable /> */}</div>
+				<div className="mt-8">
+					<VendorsTable loading={loading} error={error} />
+				</div>
 			</section>
 		</div>
 	);

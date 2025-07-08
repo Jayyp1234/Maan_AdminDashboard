@@ -1,119 +1,136 @@
 import { twMerge } from "tailwind-merge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../../components/ui/dialog";
-import { Input } from "../../components/ui/input";
-import { Checkbox } from "../../components/ui/checkbox";
-import { checkboxStyles, inputStyle } from "../../extras/commonstyles";
 import { Button } from "../../components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { createStaff } from "../../store/slices/adminSlice";
+import { toast } from "sonner";
+import { CustomInput } from "./CustomInput";
+import { inputStyle } from "../../extras/commonstyles";
+import { IconWrapper, InvisibleEyeIcon, VisibleEyeIcon } from "../../resources/icons";
 
 export default function AddAdminModal({ open, setOpen }) {
 	const dispatch = useDispatch();
 
-	// const creating = useSelector((state) => state.smsGateway.creating);
-	// const createSuccess = useSelector((state) => state.smsGateway.createSuccess);
-	// const createError = useSelector((state) => state.smsGateway.createError);
+	const { creating, createSuccess, createError } = useSelector((state) => state.admin.staff);
+	const [showPassword, setShowPassword] = useState(false);
 
-	const [form, setForm] = useState({
-		name: "",
-		provider_class: "",
-		is_active: true,
-		settings: [
-			{ key: "account_sid", value: "" },
-			{ key: "auth_token", value: "" },
-			{ key: "from_number", value: "" },
-		],
-	});
-
-	// Close modal on success
-	// useEffect(() => {
-	// 	if (createSuccess) {
-	// 		toast.success("Gateway added successfully");
-	// 		setOpen(false);
-	// 		// dispatch(resetCreateSuccess());
-	// 		setForm({
-	// 			name: "",
-	// 			provider_class: "",
-	// 			is_active: true,
-	// 			settings: [
-	// 				{ key: "account_sid", value: "" },
-	// 				{ key: "auth_token", value: "" },
-	// 				{ key: "from_number", value: "" },
-	// 			],
-	// 		});
-	// 	}
-	// }, [createSuccess]);
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		// dispatch(createSmsGateway(form));
+	const togglePasswordVisibility = () => {
+		setShowPassword((prev) => !prev);
 	};
 
-	const updateSettingValue = (index, value) => {
-		setForm((prev) => {
-			const updated = [...prev.settings];
-			updated[index].value = value;
-			return { ...prev, settings: updated };
-		});
+	const [form, setForm] = useState({
+		firstName: "",
+		lastName: "",
+		phone: "",
+		email: "",
+		password: "",
+	});
+
+	useEffect(() => {
+		if (createSuccess) {
+			toast.success("Staff created successfully");
+			setOpen(false);
+			dispatch(resetCreateStaffState());
+			setForm({
+				firstName: "",
+				lastName: "",
+				phone: "",
+				email: "",
+				password: "",
+			});
+		}
+	}, [createSuccess, dispatch, setOpen]);
+
+	const handleSubmit = () => {
+		for (const [key, value] of Object.entries(form)) {
+			if (!value.trim()) {
+				const label = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase());
+				toast.error(`${label} is required.`);
+				return;
+			}
+		}
+
+		// If all pass, dispatch with trimmed data
+		dispatch(
+			createStaff({
+				firstName: form.firstName.trim(),
+				lastName: form.lastName.trim(),
+				phone: form.phone.trim(),
+				email: form.email.trim(),
+				password: form.password.trim(),
+			})
+		);
 	};
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent className="max-w-lg">
 				<DialogHeader>
-					<DialogTitle className="text-lg font-semibold">Create New SMS Gateway</DialogTitle>
+					<DialogTitle className="text-lg font-semibold">Create New Staff</DialogTitle>
 				</DialogHeader>
-
-				<form onSubmit={handleSubmit} className="space-y-4">
+				{createError && <p className="text-sm text-red-600">{createError}</p>}
+				<form onSubmit={handleSubmit} className="space-y-3">
 					<div className="space-y-2">
-						<label className="text-sm font-medium">Name</label>
-						<Input className={`${twMerge(inputStyle)}`} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-					</div>
-
-					<div className="space-y-2">
-						<label className="text-sm font-medium">Provider Class</label>
-						<Input
-							className={`${twMerge(inputStyle)}`}
-							value={form.provider_class}
-							onChange={(e) => setForm({ ...form, provider_class: e.target.value })}
+						<label className="text-sm font-medium">First Name</label>
+						<CustomInput
+							inputClassName={twMerge(inputStyle, "h-11")}
+							value={form.firstName}
+							onChange={(e) => setForm({ ...form, firstName: e.target.value })}
 							required
 						/>
 					</div>
 
-					<div className="flex items-center space-x-2">
-						<Checkbox
-							id="is-active"
-							className={`${checkboxStyles}`}
-							checked={form.is_active}
-							onCheckedChange={(checked) => setForm({ ...form, is_active: !!checked })}
+					<div className="space-y-2">
+						<label className="text-sm font-medium">Last Name</label>
+						<CustomInput
+							inputClassName={twMerge(inputStyle, "h-11")}
+							value={form.lastName}
+							onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+							required
 						/>
-						<label htmlFor="is-active" className="text-sm">
-							Active
-						</label>
 					</div>
 
 					<div className="space-y-2">
-						<label className="text-sm font-medium">Settings</label>
-						<div className="flex flex-col gap-y-2 mt-4">
-							{form.settings.map((setting, idx) => (
-								<div key={setting.key} className="flex flex-col">
-									<span className="text-sm text-gray-500">{setting.key}</span>
-									<Input
-										className={`${twMerge(inputStyle)}`}
-										value={setting.value}
-										onChange={(e) => updateSettingValue(idx, e.target.value)}
-										required
-									/>
-								</div>
-							))}
-						</div>
+						<label className="text-sm font-medium">Phone</label>
+						<CustomInput
+							inputClassName={twMerge(inputStyle, "h-11")}
+							value={form.phone}
+							onChange={(e) => setForm({ ...form, phone: e.target.value })}
+							required
+						/>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium">Email</label>
+						<CustomInput
+							inputClassName={twMerge(inputStyle, "h-11")}
+							type="email"
+							value={form.email}
+							onChange={(e) => setForm({ ...form, email: e.target.value })}
+							required
+						/>
+					</div>
+
+					<div className="space-y-2">
+						<label className="text-sm font-medium">Password</label>
+						<CustomInput
+							inputClassName={twMerge(inputStyle, "h-11")}
+							type={showPassword ? "text" : "password"}
+							value={form.password}
+							onChange={(e) => setForm({ ...form, password: e.target.value })}
+							required
+							showButton
+							onButtonClick={togglePasswordVisibility}
+							buttonChildren={<IconWrapper>{showPassword ? <VisibleEyeIcon /> : <InvisibleEyeIcon />}</IconWrapper>}
+						/>
 					</div>
 
 					{/* {createError && <p className="text-sm text-red-600">{createError}</p>} */}
 
-					<DialogFooter className="mt-4">
-						<Button type="submit" className="bg-(--primary-clr)/80 hover:bg-(--primary-clr)">
-							Add Admin
+					<DialogFooter className="mt-10">
+						<Button type="submit" className="bg-(--primary-clr)/80 hover:bg-(--primary-clr)" disabled={creating}>
+							{creating ? "Creating..." : "Create Staff"}
 						</Button>
 					</DialogFooter>
 				</form>
