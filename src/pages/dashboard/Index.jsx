@@ -134,8 +134,7 @@ export default function Index() {
 												<TableRow key={index}>
 													<TableCell className={"px-5"}>{index}</TableCell>
 													<TableCell className={"px-4"}>
-														{staff.firstName}
-														{staff.lastName}
+														{staff.firstName} {staff.lastName}
 													</TableCell>
 													<TableCell className={"px-4"}>{staff.phone ?? "N/A"}</TableCell>
 												</TableRow>

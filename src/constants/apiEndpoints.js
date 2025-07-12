@@ -1,5 +1,6 @@
 export const API_ENDPOINTS = {
 	BASE_URL: `${import.meta.env.VITE_API_BASE_URL}`,
+
 	//Authentication
 	LOGIN: "/api/admin/login",
 	SEND_FORGOT_PASSWORD_OTP: "/api/admin/send-reset-otp",
@@ -18,4 +19,5 @@ export const API_ENDPOINTS = {
 	// ADMIN
 	CREATE_ADMIN: "/api/admin/register",
 	GET_ALL_STAFFS: "/api/admin/admin",
+	MODIFY_STAFF: (id) => `/api/admin/admin/${id}`,
 };

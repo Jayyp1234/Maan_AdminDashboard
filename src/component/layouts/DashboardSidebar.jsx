@@ -36,10 +36,10 @@ export default function DashboardSidebar() {
 			<header>
 				<div className="hidden xl:flex items-center gap-3.5">
 					<figure className="w-20">
-						<img src={images.logos.dashboardLogo} alt="" />
+						<img src={images.logos.dashboardLogo} alt="" className="majoc logo alt" />
 					</figure>
 					<div className="flex flex-col items-start">
-						<h4 className="font-semibold uppercase">Majoc</h4>
+						<h4 className="font-semibold uppercase">Admin</h4>
 						<span className="text-stone-600 leading-tight text-sm">Dashboard</span>
 					</div>
 				</div>

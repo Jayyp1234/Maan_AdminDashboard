@@ -25,7 +25,7 @@ export default function DashboardLayout() {
 							: "!pointer-events-none bg-transparent backdrop:blur-none select-none"
 					}`}>
 					<div
-						className={`h-full bg-custom xl:scale-100 xl:!opacity-100 rounded-xl xl:rounded-none border border-zinc-600 xl:border-none overflow-hidden transition-all ease duration-300 ${
+						className={`h-full xl:scale-100 xl:!opacity-100 rounded-xl xl:rounded-none border border-zinc-600 xl:border-none overflow-hidden transition-all ease duration-300 ${
 							sidebarOpen ? "opacity-100 scale-95" : "opacity-0 scale-100"
 						}`}>
 						<DashboardSidebar />

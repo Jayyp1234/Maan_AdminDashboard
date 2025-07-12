@@ -59,12 +59,12 @@ export const logoutUser = createAsyncThunk("auth/logout", async (_, { rejectWith
 	try {
 		await authAPI.logout();
 		localStorage.removeItem("token");
-		localStorage.removeItem("user");
+		localStorage.removeItem("adminId");
 		return {};
 	} catch (error) {
 		// Even if logout fails on server, clear local storage (because i dont have an endpoint for logout)
 		localStorage.removeItem("token");
-		localStorage.removeItem("user");
+		localStorage.removeItem("adminId");
 		return {};
 	}
 });

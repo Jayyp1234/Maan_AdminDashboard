@@ -11,7 +11,8 @@ import { Skeleton } from "../../components/ui/skeleton";
 
 export default function DashboardHeader() {
 	const dispatch = useDispatch();
-	const { user, loading } = useSelector((state) => state.auth);
+	const { adminProfile, loading } = useSelector((state) => state.auth);
+	const admin = adminProfile.data;
 
 	return (
 		<>
@@ -24,11 +25,11 @@ export default function DashboardHeader() {
 					</div>
 				</aside>
 				<aside className="flex items-center gap-2">
-					<button type="button" className="text-xl mr-1 p-2.5 rounded-full bg-stone-200/40 text-(--primary-clr)">
+					{/* <button type="button" className="text-xl mr-1 p-2.5 rounded-full bg-stone-200/40 text-(--primary-clr)">
 						<IconWrapper>
 							<BellIcon />
 						</IconWrapper>
-					</button>
+					</button> */}
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button className="outline-0">
@@ -43,9 +44,9 @@ export default function DashboardHeader() {
 										</>
 									)}
 									<div className="text-start hidden md:block">
-										<h5 className="font-semibold">{user?.name}</h5>
+										<h5 className="font-medium capitalize text-sm">{admin?.firstName}</h5>
 										<span className="block text-[.8rem] text-nowrap overflow-hidden overflow-ellipsis max-w-[120px] font-normal leading-none text-stone-600 tracking-normal">
-											{user?.email}
+											{admin?.email}
 										</span>
 									</div>
 									<IconWrapper className={"hidden sm:flex"}>
@@ -61,9 +62,9 @@ export default function DashboardHeader() {
 									<DefaultProfileImageIcon />
 								</IconWrapper>
 								<div className="text-start">
-									<h5 className="font-medium text-[.9rem]">{user?.name}</h5>
+									<h5 className="font-medium text-[.9rem]">{admin?.firstName}</h5>
 									<span className="block text-[.8rem] text-nowrap overflow-hidden overflow-ellipsis max-w-[120px] font-normal leading-none text-stone-600">
-										{user?.email}
+										{admin?.email}
 									</span>
 								</div>
 							</div>
@@ -107,11 +108,11 @@ export default function DashboardHeader() {
 }
 
 const dropdownLinks = [
-	{
-		title: "Settings",
-		path: AUTHENTICATED_ROUTES.settings,
-		isButton: false,
-	},
+	// {
+	// 	title: "Settings",
+	// 	path: AUTHENTICATED_ROUTES.settings,
+	// 	isButton: false,
+	// },
 	{
 		title: "Logout",
 		isButton: true,

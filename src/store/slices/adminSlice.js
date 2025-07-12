@@ -14,9 +14,29 @@ export const getAllVendorsAdminDashboard = createAsyncThunk("vendorsDashboard/ge
 export const createStaff = createAsyncThunk("admin/createStaff", async (staffData, { rejectWithValue }) => {
 	try {
 		const response = await apiClient.post(API_ENDPOINTS.CREATE_ADMIN, staffData);
+		console.log(response);
+		return;
 		return response;
 	} catch (error) {
 		return rejectWithValue(error.response?.data?.message || error.message || "Failed to create staff");
+	}
+});
+
+export const updateStaff = createAsyncThunk("staff/update", async (staffData, { rejectWithValue }) => {
+	try {
+		const response = await apiClient.patch(API_ENDPOINTS.MODIFY_STAFF(staffData.id), staffData);
+		return response.data;
+	} catch (error) {
+		return rejectWithValue(error.response?.data?.message || error.message || "Failed to update staff.");
+	}
+});
+
+export const deleteStaff = createAsyncThunk("staff/delete", async (staffId, { rejectWithValue }) => {
+	try {
+		await apiClient.delete(API_ENDPOINTS.MODIFY_STAFF(staffId));
+		return staffId;
+	} catch (error) {
+		return rejectWithValue(error.response?.data?.message || error.message || "Failed to delete staff.");
 	}
 });
 
@@ -48,6 +68,14 @@ export const adminSlice = createSlice({
 			creating: false,
 			createSuccess: false,
 			createError: null,
+
+			updating: false,
+			updateSuccess: false,
+			updateError: null,
+
+			deleting: false,
+			deleteSuccess: false,
+			deleteError: null,
 
 			list: [],
 			filtered: [],
@@ -89,11 +117,20 @@ export const adminSlice = createSlice({
 			state.staff.createSuccess = false;
 			state.staff.createError = null;
 		},
-
+		resetDeleteStaffState: (state) => {
+			state.staff.deleting = false;
+			state.staff.deleteSuccess = false;
+			state.staff.deleteError = null;
+		},
 		setStaffSearch: (state, action) => {
 			state.staff.search = action.payload;
 			state.staff.pagination.current_page = 1;
 			adminSlice.caseReducers.applyStaffFilters(state);
+		},
+		resetUpdateStaffState: (state) => {
+			state.staff.updating = false;
+			state.staff.updateSuccess = false;
+			state.staff.updateError = null;
 		},
 		applyStaffFilters: (state) => {
 			const search = state.staff.search.toLowerCase().trim();
@@ -110,6 +147,23 @@ export const adminSlice = createSlice({
 				});
 			}
 		},
+
+		applyStaffFilters: (state) => {
+			const search = state.staff.search.toLowerCase().trim();
+
+			if (!search) {
+				state.staff.filtered = state.staff.list;
+			} else {
+				state.staff.filtered = state.staff.list.filter(
+					(staff) =>
+						(staff.firstName && staff.firstName.toLowerCase().includes(search)) ||
+						(staff.lastName && staff.lastName.toLowerCase().includes(search)) ||
+						(staff.email && staff.email.toLowerCase().includes(search)) ||
+						(staff.phone && staff.phone.toLowerCase().includes(search))
+				);
+			}
+		},
+
 		setStaffCurrentPage: (state, action) => {
 			state.staff.pagination.current_page = action.payload;
 		},
@@ -141,6 +195,7 @@ export const adminSlice = createSlice({
 				state.vendors.loading = false;
 				state.vendors.error = action.payload || "Failed to load vendors dashboard";
 			})
+
 			//create new admin
 			.addCase(createStaff.pending, (state) => {
 				state.staff.creating = true;
@@ -173,6 +228,41 @@ export const adminSlice = createSlice({
 			.addCase(getAllStaffsAdminDashboard.rejected, (state, action) => {
 				state.staff.loading = false;
 				state.staff.error = action.payload || "Failed to load staff dashboard";
+			})
+
+			//update staff
+			.addCase(updateStaff.pending, (state) => {
+				state.staff.updating = true;
+				state.staff.updateError = null;
+			})
+			.addCase(updateStaff.fulfilled, (state, action) => {
+				state.staff.updating = false;
+				state.staff.updateSuccess = true;
+
+				const updatedStaff = action.payload;
+				state.staff.list = state.staff.list.map((item) => (item.id === updatedStaff.id ? updatedStaff : item));
+
+				adminSlice.caseReducers.applyStaffFilters(state);
+			})
+			.addCase(updateStaff.rejected, (state, action) => {
+				state.staff.updating = false;
+				state.staff.updateError = action.payload || "Failed to update staff.";
+			})
+
+			//delete staff
+			.addCase(deleteStaff.pending, (state) => {
+				state.staff.deleting = true;
+				state.staff.deleteError = null;
+			})
+			.addCase(deleteStaff.fulfilled, (state, action) => {
+				state.staff.deleting = false;
+				state.staff.deleteSuccess = true;
+				state.staff.list = state.staff.list.filter((item) => item.id !== action.payload);
+				adminSlice.caseReducers.applyStaffFilters(state);
+			})
+			.addCase(deleteStaff.rejected, (state, action) => {
+				state.staff.deleting = false;
+				state.staff.deleteError = action.payload || "Failed to delete staff.";
 			});
 	},
 });
@@ -187,7 +277,9 @@ export const {
 	setStaffSearch,
 	setStaffCurrentPage,
 	setStaffPerPage,
-	clearStaffData,
+	clearVendorsData,
+	resetUpdateStaffState,
+	resetDeleteStaffState,
 } = adminSlice.actions;
 
 export default adminSlice;

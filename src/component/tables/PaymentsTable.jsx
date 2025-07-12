@@ -6,15 +6,24 @@ import { IconWrapper, ThreeDotsIcon } from "@/resources/icons";
 import { Pagination } from "../base/Pagination";
 import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "../../components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
+import { useState } from "react";
 
 export const PaymentsTable = ({ loading, error }) => {
 	const dispatch = useDispatch();
 	const { filtered, pagination } = useSelector((state) => state.payments);
+	const [showModal, setShowModal] = useState(false);
+	const [selectedPayment, setSelectedPayment] = useState(null);
 
 	const paginatedData = filtered.slice((pagination.current_page - 1) * pagination.per_page, pagination.current_page * pagination.per_page);
 
 	const handlePageChange = (page) => {
 		dispatch(setCurrentPage(page));
+	};
+
+	const handleViewPayment = (transaction) => {
+		setSelectedPayment(transaction);
+		setShowModal(true);
 	};
 
 	if (loading && filtered.length === 0) {
@@ -89,7 +98,7 @@ export const PaymentsTable = ({ loading, error }) => {
 												</Button>
 											</DropdownMenuTrigger>
 											<DropdownMenuContent align="end" className="bg-white">
-												<DropdownMenuItem onClick={() => alert(`Viewing ${payment.reference}`)}>View Details</DropdownMenuItem>
+												<DropdownMenuItem onClick={() => handleViewPayment(payment)}>View Details</DropdownMenuItem>
 											</DropdownMenuContent>
 										</DropdownMenu>
 									</TableCell>
@@ -111,6 +120,48 @@ export const PaymentsTable = ({ loading, error }) => {
 				totalPages={Math.ceil(filtered.length / pagination.per_page)}
 				onPageChange={handlePageChange}
 			/>
+
+			<Dialog open={showModal} onOpenChange={setShowModal}>
+				<DialogContent className="lg:min-w-3xl">
+					<DialogHeader>
+						<DialogTitle>Payment Details</DialogTitle>
+					</DialogHeader>
+					{selectedPayment && (
+						<div className="grid gap-4 mt-4 text-sm text-slate-700 pb-10 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
+							<PaymentDetailItem label="Reference" value={selectedPayment.reference} />
+							<PaymentDetailItem label="Amount" value={selectedPayment.amount} />
+							<PaymentDetailItem label="Amount Debited" value={selectedPayment.amount_debited} />
+							<PaymentDetailItem label="Amount Settled" value={selectedPayment.amount_settled} />
+							<PaymentDetailItem label="Charge" value={selectedPayment.charge} />
+							<PaymentDetailItem label="Currency" value={selectedPayment.currency} />
+							<PaymentDetailItem label="Status" value={selectedPayment.status} />
+							<PaymentDetailItem label="Date" value={selectedPayment.time} />
+							<PaymentDetailItem label="Narration" value={selectedPayment.narration} />
+							<PaymentDetailItem label="Transaction Reference" value={selectedPayment.transaction_reference} />
+							<PaymentDetailItem label="Type" value={selectedPayment.type} />
+							<PaymentDetailItem label="Sender Name" value={selectedPayment.webhook_data?.data?.sender?.originatorName || "N/A"} />
+							<PaymentDetailItem label="Sender Bank" value={selectedPayment.webhook_data?.data?.sender?.originatorBank || "N/A"} />
+							<PaymentDetailItem label="Sender Account" value={selectedPayment.webhook_data?.data?.sender?.originatorAccountNumber || "N/A"} />
+							<PaymentDetailItem label="Receiver Account" value={selectedPayment.webhook_data?.data?.recipient || "N/A"} />
+							<PaymentDetailItem label="Processor Reference" value={selectedPayment.webhook_data?.data?.processorReference || "N/A"} />
+							<PaymentDetailItem label="Expected Amount" value={selectedPayment.webhook_data?.data?.expectedAmount || "N/A"} />
+							<PaymentDetailItem label="Net Amount" value={selectedPayment.webhook_data?.data?.netAmount || "N/A"} />
+							<PaymentDetailItem label="Channel" value={selectedPayment.webhook_data?.data?.channel || "N/A"} />
+							<PaymentDetailItem label="Created At" value={selectedPayment.webhook_data?.data?.createdAt || "N/A"} />
+							<PaymentDetailItem label="Updated At" value={selectedPayment.webhook_data?.data?.updatedAt || "N/A"} />
+						</div>
+					)}
+				</DialogContent>
+			</Dialog>
+		</div>
+	);
+};
+
+export const PaymentDetailItem = ({ label, value }) => {
+	return (
+		<div>
+			<div className="font-semibold text-slate-900">{label}</div>
+			<div className="break-words whitespace-pre-wrap">{value}</div>
 		</div>
 	);
 };

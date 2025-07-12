@@ -7,12 +7,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "../base/Pagination";
 import { toast } from "sonner";
-import { setStaffCurrentPage } from "@/store/slices/adminSlice";
+import { deleteStaff, setStaffCurrentPage } from "@/store/slices/adminSlice";
 import { IconWrapper, ThreeDotsIcon } from "@/resources/icons";
+import { useState } from "react";
+import { ConfirmDialog, EditAdminModal } from "../base/AdminModals";
 
 export const AdminStaffsTable = ({ loading, error }) => {
 	const dispatch = useDispatch();
 	const { filtered, pagination } = useSelector((state) => state.admin.staff);
+	const [editModal, setEditModal] = useState(false);
+	const [selectedStaff, setSelectedStaff] = useState(null);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
 	const paginatedData = filtered.slice((pagination.current_page - 1) * pagination.per_page, pagination.current_page * pagination.per_page);
 
@@ -21,15 +26,27 @@ export const AdminStaffsTable = ({ loading, error }) => {
 	};
 
 	const handleEditStaff = (staff) => {
-		toast.info(`Edit Staff: ${staff.firstName}`);
+		setSelectedStaff(staff);
+		setEditModal(true);
 	};
 
-	const handleDisableStaff = (staff) => {
-		toast.warning(`Staff Disabled: ${staff.firstName}`);
-	};
+	// const handleDisableStaff = (staff) => {
+	// 	toast.warning(`Staff Disabled: ${staff.firstName}`);
+	// };
 
 	const handleDeleteStaff = (staff) => {
-		toast.error(`Staff Deleted: ${staff.firstName}`);
+		setSelectedStaff(staff);
+		setOpenDeleteDialog(true);
+	};
+
+	const confirmDelete = async () => {
+		try {
+			await dispatch(deleteStaff(selectedStaff.id)).unwrap();
+			toast.success("Staff deleted successfully");
+			setOpenDeleteDialog(false);
+		} catch (error) {
+			toast.error(error || "Failed to delete staff");
+		}
 	};
 
 	if (loading && filtered.length === 0) {
@@ -67,8 +84,8 @@ export const AdminStaffsTable = ({ loading, error }) => {
 								<TableCell>{staff.email}</TableCell>
 								<TableCell>{staff.phone ?? "N/A"}</TableCell>
 								<TableCell>
-									<Badge className={staff.admin_status ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
-										{staff.admin_status ? "Active" : "Inactive"}
+									<Badge className={staff.admin_status == 1 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+										{staff.admin_status == 1 ? "Active" : "Inactive"}
 									</Badge>
 								</TableCell>
 								<TableCell>{new Date(staff.created_at).toLocaleDateString()}</TableCell>
@@ -83,7 +100,7 @@ export const AdminStaffsTable = ({ loading, error }) => {
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end" className="bg-white">
 											<DropdownMenuItem onClick={() => handleEditStaff(staff)}>Edit Staff</DropdownMenuItem>
-											<DropdownMenuItem onClick={() => handleDisableStaff(staff)}>Disable Staff</DropdownMenuItem>
+											{/* <DropdownMenuItem onClick={() => handleDisableStaff(staff)}>Disable Staff</DropdownMenuItem> */}
 											<DropdownMenuItem onClick={() => handleDeleteStaff(staff)}>Delete Staff</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
@@ -105,6 +122,17 @@ export const AdminStaffsTable = ({ loading, error }) => {
 				totalPages={Math.ceil(filtered.length / pagination.per_page)}
 				onPageChange={handlePageChange}
 				className="border-t border-red-100 pt-4"
+			/>
+
+			<EditAdminModal open={editModal} setOpen={setEditModal} staff={selectedStaff} />
+			<ConfirmDialog
+				open={openDeleteDialog}
+				onOpenChange={setOpenDeleteDialog}
+				onConfirm={confirmDelete}
+				title="Delete Staff"
+				description={`Are you sure you want to delete ${selectedStaff?.firstName} ${selectedStaff?.lastName}?`}
+				confirmText="Delete"
+				confirmVariant="destructive"
 			/>
 		</div>
 	);
