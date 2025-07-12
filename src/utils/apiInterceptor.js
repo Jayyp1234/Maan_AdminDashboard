@@ -49,11 +49,12 @@ class APIClient {
 			const response = await fetch(url, config);
 
 			// Handle 401 Unauthorized - no refresh, just logout
-			if (response.status === 401) {
-				store.dispatch(clearCredentials());
-				window.location.href = "/"; // Or your login route
-				throw new Error("Session expired. Please login again.");
-			}
+			// if (response.status === 401) {
+
+			// store.dispatch(clearCredentials());
+			// window.location.href = "/"; // Or your login route
+			// throw new Error("Session expired. Please login again.");
+			// }
 
 			// Handle other non-OK
 			if (!response.ok) {

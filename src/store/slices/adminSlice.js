@@ -170,7 +170,6 @@ export const adminSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-
 			// get all vendors
 			.addCase(getAllVendorsAdminDashboard.pending, (state) => {
 				state.vendors.loading = true;

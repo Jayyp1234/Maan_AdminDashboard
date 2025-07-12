@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Skeleton } from "../../components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../components/ui/dialog";
 import { useState } from "react";
+import { formatNumber } from "../../resources/helpers";
 
 export const PaymentsTable = ({ loading, error }) => {
 	const dispatch = useDispatch();
@@ -57,7 +58,7 @@ export const PaymentsTable = ({ loading, error }) => {
 							const senderBank = payment.webhook_data?.data?.sender?.originatorBank || "N/A";
 							const receiverName = payment.webhook_data?.data?.meta?.notification?.craccountname || "N/A";
 							const receiverAcc = payment.webhook_data?.data?.recipient || "N/A";
-							const amount = payment.amount || "0.00";
+							const amount = formatNumber(payment.amount, { currency: true }) || "0.00";
 							const currency = payment.currency || "NGN";
 							const status = payment.status || "Unknown";
 							const date = payment.time || "N/A";
@@ -79,12 +80,10 @@ export const PaymentsTable = ({ loading, error }) => {
 									</TableCell>
 									<TableCell>
 										<div className="flex flex-col">
-											<span className="font-semibold">
-												{amount} {currency}
-											</span>
+											<span className="font-semibold">{amount}</span>
 										</div>
 									</TableCell>
-									<TableCell>{date}</TableCell>
+									<TableCell>{new Date(date).toLocaleString()}</TableCell>
 									<TableCell>
 										<span className={`text-xs font-medium ${status === "Successful" ? "text-green-600" : "text-blue-600"}`}>{status}</span>
 									</TableCell>
@@ -122,20 +121,20 @@ export const PaymentsTable = ({ loading, error }) => {
 			/>
 
 			<Dialog open={showModal} onOpenChange={setShowModal}>
-				<DialogContent className="lg:min-w-3xl">
+				<DialogContent className="lg:min-w-3xl h-[90vh] overflow-y-auto overflow-x-hidden rounded-2xl">
 					<DialogHeader>
 						<DialogTitle>Payment Details</DialogTitle>
 					</DialogHeader>
 					{selectedPayment && (
 						<div className="grid gap-4 mt-4 text-sm text-slate-700 pb-10 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3">
-							<PaymentDetailItem label="Reference" value={selectedPayment.reference} />
-							<PaymentDetailItem label="Amount" value={selectedPayment.amount} />
-							<PaymentDetailItem label="Amount Debited" value={selectedPayment.amount_debited} />
-							<PaymentDetailItem label="Amount Settled" value={selectedPayment.amount_settled} />
-							<PaymentDetailItem label="Charge" value={selectedPayment.charge} />
+							<PaymentDetailItem label="Reference" value={selectedPayment.reference ?? "N/A"} />
+							<PaymentDetailItem label="Amount" value={selectedPayment.amount ?? "N/A"} />
+							<PaymentDetailItem label="Amount Debited" value={formatNumber(selectedPayment.amount_debited, { currency: true }) ?? "N/A"} />
+							<PaymentDetailItem label="Amount Settled" value={formatNumber(selectedPayment.amount_settled, { currency: true })} />
+							<PaymentDetailItem label="Charge" value={formatNumber(selectedPayment.charge, { currency: true })} />
 							<PaymentDetailItem label="Currency" value={selectedPayment.currency} />
 							<PaymentDetailItem label="Status" value={selectedPayment.status} />
-							<PaymentDetailItem label="Date" value={selectedPayment.time} />
+							<PaymentDetailItem label="Date" value={new Date(selectedPayment.time).toLocaleString()} />
 							<PaymentDetailItem label="Narration" value={selectedPayment.narration} />
 							<PaymentDetailItem label="Transaction Reference" value={selectedPayment.transaction_reference} />
 							<PaymentDetailItem label="Type" value={selectedPayment.type} />
@@ -144,11 +143,17 @@ export const PaymentsTable = ({ loading, error }) => {
 							<PaymentDetailItem label="Sender Account" value={selectedPayment.webhook_data?.data?.sender?.originatorAccountNumber || "N/A"} />
 							<PaymentDetailItem label="Receiver Account" value={selectedPayment.webhook_data?.data?.recipient || "N/A"} />
 							<PaymentDetailItem label="Processor Reference" value={selectedPayment.webhook_data?.data?.processorReference || "N/A"} />
-							<PaymentDetailItem label="Expected Amount" value={selectedPayment.webhook_data?.data?.expectedAmount || "N/A"} />
-							<PaymentDetailItem label="Net Amount" value={selectedPayment.webhook_data?.data?.netAmount || "N/A"} />
+							<PaymentDetailItem
+								label="Expected Amount"
+								value={formatNumber(selectedPayment.webhook_data?.data?.expectedAmount, { currency: true }) || "N/A"}
+							/>
+							<PaymentDetailItem
+								label="Net Amount"
+								value={formatNumber(selectedPayment.webhook_data?.data?.netAmount, { currency: true }) || "N/A"}
+							/>
 							<PaymentDetailItem label="Channel" value={selectedPayment.webhook_data?.data?.channel || "N/A"} />
-							<PaymentDetailItem label="Created At" value={selectedPayment.webhook_data?.data?.createdAt || "N/A"} />
-							<PaymentDetailItem label="Updated At" value={selectedPayment.webhook_data?.data?.updatedAt || "N/A"} />
+							<PaymentDetailItem label="Created At" value={new Date(selectedPayment.webhook_data?.data?.createdAt).toLocaleString() || "N/A"} />
+							<PaymentDetailItem label="Updated At" value={new Date(selectedPayment.webhook_data?.data?.updatedAt).toLocaleString() || "N/A"} />
 						</div>
 					)}
 				</DialogContent>

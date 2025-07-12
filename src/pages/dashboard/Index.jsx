@@ -96,9 +96,9 @@ export default function Index() {
 												<TableRow key={index}>
 													<TableCell className={"px-3"}>{index}</TableCell>
 													<TableCell className={"px-3"}>{vendor.applicant_name}</TableCell>
-													<TableCell className={"py-3"}>{vendor.amount ?? "N/A"}</TableCell>
+													<TableCell className={"py-3"}>{`${formatNumber(vendor.amount, { currency: true })}` ?? "N/A"}</TableCell>
 													<TableCell className={"py-3"}>{vendor.registration_status ?? "N/A"}</TableCell>
-													<TableCell className={"py-3"}>{vendor.created_at ?? "N/A"}</TableCell>
+													<TableCell className={"py-3"}>{new Date(vendor.created_at).toLocaleString() ?? "N/A"}</TableCell>
 												</TableRow>
 										  ))}
 								</TableBody>

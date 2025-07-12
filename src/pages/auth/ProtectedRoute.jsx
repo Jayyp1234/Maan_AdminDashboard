@@ -9,14 +9,14 @@ export const ProtectedRoute = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 
-	const { isAuthenticated, adminProfile, loading } = useSelector((state) => state.auth);
+	const { isAuthenticated, loading } = useSelector((state) => state.auth);
 	const token = localStorage.getItem("token");
 
 	useEffect(() => {
-		if (token && !adminProfile) {
+		if (token) {
 			dispatch(getUserAdminProfile());
 		}
-	}, [dispatch, token, adminProfile]);
+	}, [dispatch]);
 
 	if (loading) {
 		return <PageLoader />;

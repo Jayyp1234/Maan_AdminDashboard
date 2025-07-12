@@ -256,6 +256,7 @@ const authSlice = createSlice({
 				state.adminProfile.error = null;
 			})
 			.addCase(getUserAdminProfile.fulfilled, (state, action) => {
+				console.log(action.payload);
 				state.adminProfile.loading = false;
 				state.adminProfile.data = action.payload;
 			})

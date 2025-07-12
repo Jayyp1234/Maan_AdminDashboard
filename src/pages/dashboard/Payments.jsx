@@ -4,18 +4,15 @@ import { PageTitle } from "../../component/base/PageTitle";
 import { PaymentsTable } from "../../component/tables/PaymentsTable";
 import { IconWrapper, SearchIcon } from "../../resources/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllTransactions } from "../../store/slices/paymentSlice";
+import { fetchAllTransactions, setSearch } from "../../store/slices/paymentSlice";
 
 export default function Payments() {
-	const [search, setSearch] = useState("");
 	const dispatch = useDispatch();
-	const { transactions, loading, error } = useSelector((state) => state.payments);
+	const { transactions, loading, error, search } = useSelector((state) => state.payments);
 
 	useEffect(() => {
 		dispatch(fetchAllTransactions());
 	}, []);
-
-	console.log(transactions);
 
 	return (
 		<div>
@@ -26,7 +23,7 @@ export default function Payments() {
 					<div className="relative w-full border rounded-full focus-within:border-(--primary-clr) border-stone-200 lg:w-80 transition ease-in-out duration-300">
 						<input
 							placeholder="Search by name, email or phone..."
-							className="pl-12 w-full rounded-full border-(--primary-clr) h-10 placeholder:text-[.9rem] bg-transparent focus:outline-none"
+							className="pl-12 pr-5 w-full rounded-full border-(--primary-clr) h-10 placeholder:text-[.9rem] bg-transparent focus:outline-none"
 							name="Search"
 							value={search}
 							onChange={(e) => dispatch(setSearch(e.target.value))}
