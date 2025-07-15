@@ -108,7 +108,7 @@ export const VendorsTable = ({ loading, error }) => {
 								<TableCell>{vendor.feeding_capacity ?? "N/A"}</TableCell>
 								<TableCell>
 									<Badge
-										className={` capitalize ${
+										className={`capitalize ${
 											vendor.payment_status === "completed"
 												? "bg-green-100 text-green-800"
 												: vendor.payment_status === "processing"

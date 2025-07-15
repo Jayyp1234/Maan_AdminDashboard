@@ -12,7 +12,7 @@ export default function ViewVendorModal({ open, setOpen, vendor }) {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogContent className="lg:min-w-4xl w-full overflow-y-auto max-h-[90vh]">
+			<DialogContent className="lg:min-w-4xl sm:min-w-2xl w-full overflow-y-auto max-h-[90vh]">
 				<DialogHeader>
 					<DialogTitle className="text-lg font-semibold">Vendor Details</DialogTitle>
 				</DialogHeader>
@@ -42,7 +42,7 @@ export default function ViewVendorModal({ open, setOpen, vendor }) {
 				{vendor.receipts && vendor.receipts.length > 0 && (
 					<div className="mt-0">
 						<h3 className="text-md font-semibold mb-2">All Receipts</h3>
-						<div className="flex flex-wrap gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
 							{vendor.receipts.map((receipt, idx) => (
 								<ReceiptCard url={`${receiptBaseURL}/${receipt.file_path}`} index={idx} date={receipt.created_at} />
 							))}
